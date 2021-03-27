@@ -1,0 +1,134 @@
+No need to index
+format is the same per guide so
+
+
+
+Search for these phrases to find the section links to go to next
+eg 
+(replace spaces with underscores)
+#WALKTHROUGHNAME# = HeartGold_and_SoulSilver_walkthrough
+#SECTION#		  = Section_1
+#SITE#			  = https://bulbapedia.bulbagarden.net
+#SITE#/wiki/Appendix:#WALKTHROUGHNAME#/#SECTION#
+
+That'll load all the section pages so we can then search through them and create a sort of JSON
+
+
+
+
+In each section major trainers can be found via this string
+border-radius: 20px; -moz-border-radius: 20px; -webkit-border-radius: 20px; -khtml-border-radius: 20px; -icab-border-radius: 20px; -o-border-radius: 20px; background:
+
+index at the end of the working area and then find the last index of 
+<tr>
+<td>
+<table class="expandable" 
+
+This is the actual start of the element
+
+We can then start our substring there and begin working through the trainer and when done simply look for the first index of 
+</td></tr></table><br /><br clear="left" />
+</td>
+<td>
+
+and repeating the process until all trainers are handled
+
+
+
+The name of the trainer can be found by substringing by the first index of 
+<td> <b><big>
+
+and the first index of
+</big></b>
+
+The name is between these two elements
+
+
+POKEMON
+
+The ability can be found substringing by the first index of 
+<span style="color:#000;">
+
+and then substring again in a new string by the first index of 
+</span></a>
+</td></tr></table>
+
+
+that is the ability
+
+
+Then you want to substring the working string again by 
+<table class="roundy" style="margin:auto; background: transparent;">
+
+
+Then for the held item
+A new substring by the first index of 
+<td style="text-align: center;">
+
+and the first index of 
+</td></tr></table>
+</td></tr>
+<tr>
+
+
+substring the working string by 
+</td></tr></table>
+</td></tr>
+<tr>
+
+
+Getting the Pokemon itself
+A new substring with the first index of 
+<span style="color:#000;">
+
+and the first index of 
+</span></a>
+
+The gender
+Substring the working string by the first index of
+</span></a>
+adding the length of that string itself to the index?
+
+then a new substring by the first index of 
+;">
+
+and first index of 
+</span>
+
+The level
+Substring by the first index of 
+</small>
+and the first index of 
+</td></tr>
+<tr>
+
+
+Moves
+
+Substring the working string by the first index of 
+<span style="color:#000;">
+
+then make a new substring with 0
+and the first index of 
+</span></a>
+
+substring the working string by
+</span></a>
+
+and repeat four times
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
