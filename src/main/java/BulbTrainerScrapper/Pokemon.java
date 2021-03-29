@@ -47,6 +47,10 @@ public class Pokemon {
 		}
 	}
 	
+	public String getAbility() {
+		return ability;
+	}
+	
 	public String toString() {
 		String movesString = "[";
 		for (int i = 0; i < MAX_NUMBER_OF_MOVES; i++) {

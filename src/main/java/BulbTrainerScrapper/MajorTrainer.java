@@ -3,14 +3,11 @@ package BulbTrainerScrapper;
 import org.jsoup.Jsoup;
 
 public class MajorTrainer {
+	private final static String LOCATE_TRAINER = "border-radius: 20px; -moz-border-radius: 20px; -webkit-border-radius: 20px; -khtml-border-radius: 20px; -icab-border-radius: 20px; -o-border-radius: 20px; background:";
 
-	public static Pair<Trainer, String> getTrainer(String source) {
-		final String LOCATE_TRAINER = "border-radius: 20px; -moz-border-radius: 20px; -webkit-border-radius: 20px; -khtml-border-radius: 20px; -icab-border-radius: 20px; -o-border-radius: 20px; background:";
-		final String BEGIN_TRAINER = "expandable\" ";
+	protected static Pair<Trainer, String> getTrainer(String source) {
 		Trainer trainer = new Trainer();
-		String findTrainer = source.substring(0, source.indexOf(LOCATE_TRAINER));
-		source = source.substring(findTrainer.lastIndexOf(BEGIN_TRAINER));
-		
+		source = source.substring(source.indexOf(LOCATE_TRAINER) + LOCATE_TRAINER.length());
 		trainer.setName(getTrainerName(source));
 		
 		do  {
@@ -20,7 +17,7 @@ public class MajorTrainer {
 		}
 		while (hasNextPokemon(source));
 		
-		return new Pair(trainer, source);
+		return new Pair<Trainer, String>(trainer, source);
 	}
 	
 	private static String getTrainerName(String source) {
@@ -35,23 +32,33 @@ public class MajorTrainer {
 		final String PASS_ABILITY = "<small>Held item:</small>";
 		final String PASS_HELD_ITEM = "</td></tr></table>";
 		final String PASS_NAME = "</span></a>";
-		
+		final String ALT_PASS_NAME = "mon)\"><span style=\"color:#000;\">";
 		Pokemon pokemon = new Pokemon();
 		pokemon.setAbility(getAbility(source));
 		
-		source = source.substring(source.indexOf(PASS_ABILITY) + PASS_ABILITY.length());
-		
-		pokemon.setHeldItem(getHeldItem(source));
-		
-		source = source.substring(source.indexOf(PASS_HELD_ITEM) + PASS_HELD_ITEM.length());
-		
-		pokemon.setName(getPokemonName(source));
-		
-		source = source.substring(source.indexOf(PASS_NAME) + PASS_NAME.length());
-		
-		pokemon.setGender(getGender(source));
-		
-		pokemon.setLevel(Integer.valueOf(getLevel(source)));
+		if (pokemon.getAbility().length() < 50) {
+			source = source.substring(source.indexOf(PASS_ABILITY) + PASS_ABILITY.length());
+			
+			pokemon.setHeldItem(getHeldItem(source));
+			
+			source = source.substring(source.indexOf(PASS_HELD_ITEM) + PASS_HELD_ITEM.length());
+			
+			pokemon.setName(getPokemonName(source));
+			
+			source = source.substring(source.indexOf(PASS_NAME) + PASS_NAME.length());
+			
+			pokemon.setGender(getGender(source));
+			
+			pokemon.setLevel(Integer.valueOf(getLevel(source)));
+		} else {
+			/*Early games lacked multiple bits of info*/
+			pokemon.setAbility("None");
+			pokemon.setHeldItem("None");
+			pokemon.setName(getPokemonName(source));
+			source = source.substring(source.indexOf(ALT_PASS_NAME) + ALT_PASS_NAME.length());
+			pokemon.setGender("None");
+			pokemon.setLevel(Integer.valueOf(getLevel(source)));
+		}
 		
 		for (int i = 0; i < Pokemon.MAX_NUMBER_OF_MOVES; i++)
 		{
@@ -60,7 +67,7 @@ public class MajorTrainer {
 			pokemon.addMove(movePass.getFirstObject());
 		}
 		
-		return new Pair(pokemon, source);
+		return new Pair<Pokemon, String>(pokemon, source);
 	}
 	
 	private static String getAbility(String source) {
@@ -75,17 +82,16 @@ public class MajorTrainer {
 	private static String getHeldItem(String source) {
 		final String HELD_ITEM_BEGIN_INDEX = "<td style=\"text-align: center;\"> ";
 		final String HELD_ITEM_END_INDEX = "\n</td></tr></table>";
-		final String IMAGE_TAG_START = "<img ";
-		final String A_TAG_END = "</a>";
 		String heldItem = source.substring(source.indexOf(HELD_ITEM_BEGIN_INDEX) + HELD_ITEM_BEGIN_INDEX.length(),
 				source.indexOf(HELD_ITEM_END_INDEX));
 		return Jsoup.parse(heldItem).text();
 	}
 	
 	private static String getPokemonName(String source) {
-		final String NAME_BEGIN_INDEX = "<span style=\"color:#000;\">";
+		final String NAME_BEGIN_INDEX = "mon)\"><span style=\"color:#000;\">";
 		final String NAME_END_INDEX = "</span></a>";
-		String name = source.substring(source.indexOf(NAME_BEGIN_INDEX) + NAME_BEGIN_INDEX.length(),
+		source = source.substring(source.indexOf(NAME_BEGIN_INDEX));
+		String name = source.substring(NAME_BEGIN_INDEX.length(),
 				source.indexOf(NAME_END_INDEX));
 		return name;
 	}
@@ -93,8 +99,17 @@ public class MajorTrainer {
 	private static String getGender(String source) {
 		final String GENDER_BEGIN_INDEX = ";\">";
 		final String GENDER_END_INDEX = "</span>";
-		String gender = source.substring(source.indexOf(GENDER_BEGIN_INDEX) + GENDER_BEGIN_INDEX.length(),
+		String gender = "";
+		try {
+		 gender = source.substring(source.indexOf(GENDER_BEGIN_INDEX) + GENDER_BEGIN_INDEX.length(),
 				source.indexOf(GENDER_END_INDEX));
+		} catch (StringIndexOutOfBoundsException e) {
+			gender = "None";
+			return gender;
+		}
+		if (gender.length() > 10) {
+			gender = "None";
+		}
 		return gender;
 	}
 	
@@ -103,6 +118,12 @@ public class MajorTrainer {
 		final String LEVEL_END_INDEX = "\n</td></tr>";
 		String level = source.substring(source.indexOf(LEVEL_BEGIN_INDEX) + LEVEL_BEGIN_INDEX.length(),
 				source.indexOf(LEVEL_END_INDEX));
+		if (level.length() > 10) {
+			level = Jsoup.parse(level).text();
+			if (level.contains(",")) {
+				level = level.split(", ")[0];
+			}
+		}
 		return level;
 	}
 	
@@ -118,22 +139,23 @@ public class MajorTrainer {
 					"<td class=\"roundybl\" width=\"50%\" style=\"text-align: center; background:#68A090; line-height:12px;\"> <small><a href=\"/wiki/Unknown_(type)\" class=\"mw-redirect\" title=\"Unknown (type)";
 			
 			if (source.indexOf(CURSE_TYPE) == source.indexOf(MOVE_END_INDEX)) {
-				return new Pair(null, source);
+				return new Pair<String, String>(null, source);
 			}
 		}
-		return new Pair(move, source);
+		return new Pair<String, String>(move, source);
 	}
 	
 	private static boolean hasNextPokemon(String source) {
-		final String LOCATE_TRAINER = "border-radius: 20px; -moz-border-radius: 20px; -webkit-border-radius: 20px; -khtml-border-radius: 20px; -icab-border-radius: 20px; -o-border-radius: 20px; background:";
-		final String LEVEL_INDEX = "</span> <small>Lv.</small>";
+		final String MAJOR_POKE_INDEX = "<td class=\"roundy\" style=\"margin:auto; text-align: center; background: ";
+		int levelIdx = source.indexOf(MAJOR_POKE_INDEX);
+		int trainerIdx = source.indexOf(LOCATE_TRAINER);
 		if (source.contains(LOCATE_TRAINER)) {
-			if (source.indexOf(LOCATE_TRAINER) > source.indexOf(LEVEL_INDEX)) { //
+			if (trainerIdx > levelIdx) { //
 				return true;
 			}
 		}
 		else {
-			if (source.contains(LEVEL_INDEX)) {
+			if (source.contains(MAJOR_POKE_INDEX)) {
 				return true;
 			}
 			
@@ -143,7 +165,6 @@ public class MajorTrainer {
 	}
 	
 	static boolean hasNextTrainer(String source) {
-		final String LOCATE_TRAINER = "border-radius: 20px; -moz-border-radius: 20px; -webkit-border-radius: 20px; -khtml-border-radius: 20px; -icab-border-radius: 20px; -o-border-radius: 20px; background:";
 		if (source.contains(LOCATE_TRAINER)) {
 			return true;
 		}
