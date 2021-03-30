@@ -16,40 +16,72 @@ public class LoadGameData {
 	private final static String WIKI = "https://bulbapedia.bulbagarden.net";
 	private final static String WIKI_EXTENSION = "/wiki/";
 	
-	public static ArrayList<GameData> loadData() {
-		ArrayList<GameData> gamesData = getGamesData();
-		String source = "";
-		//Game sections are now all loaded up
-		//Now to load the trainer data from each game
-		
-			for (GameData gameData : gamesData) {
+	public static ArrayList<GameData> loadData(Game game, String sect) {
+		if (game == null) {
+			return loadAllData(getGamesData());
+		}
+		else {
+			GameData gameData = loadGameWalkthrough(game);
+			if (sect == null) {
+				gameData = loadAllSections(gameData);
+			}
+			else {
 				for (Section section : gameData.getSections()) {
-					try {
-						source = loadSection(section);
-						//Section page loaded now to actually operate on the page itself
-						gameData.setTrainers(LoadTrainers.getTrainers(source, gameData.getGame()).toArray(new Trainer[0]));
-					}
-					catch (Exception e) {
-						System.out.println("Section: " + section);
-						System.out.println("Game: " + gameData.getGame().getGame());
+					if (section.getName().contains(sect)) {
+						try {
+							gameData.addTrainers(loadSection(section, gameData));
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
+			}
+			ArrayList<GameData> gamesData = new ArrayList<GameData>();
+			gamesData.add(gameData);
+			return gamesData;
+		}
+	}
+	
+	private static GameData loadAllSections(GameData gameData) {
+		for (Section section : gameData.getSections()) {
+			try {
+				gameData.addTrainers(loadSection(section, gameData));
+			}
+			catch (Exception e) {
+				System.out.println("Section: " + section.getName());
+				System.out.println("Game: " + gameData.getGame().getGame());
+				e.printStackTrace();
+			}
+		}
+		return gameData;
+	}
+	
+	public static ArrayList<GameData> loadAllData(ArrayList<GameData> gamesData) {
+		//Game sections are now all loaded up
+		//Now to load the trainer data from each game
+			for (GameData gameData : gamesData) {
+				gameData = loadAllSections(gameData);
 			}
 		
 		return gamesData;
 	}
 	
 	
+	private static GameData loadGameWalkthrough(Game game) {
+		String source = "";
+		try {
+			source = loadPageHTML(WIKI+WIKI_EXTENSION+game.getWalkthroughLink());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new GameData(loadSections(source), game, null);
+	}
+		
 	private static ArrayList<GameData> getGamesData() {
 		ArrayList<GameData> gamesData = new ArrayList<GameData>();
-		String source = "";
 		for (Game game : Game.values()) {
-			try {
-				source = loadPageHTML(WIKI+WIKI_EXTENSION+game.getWalkthroughLink());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			gamesData.add(new GameData(loadSections(source), game, null));
+			gamesData.add(loadGameWalkthrough(game));
 		}
 		return gamesData;
 	}
@@ -68,15 +100,16 @@ public class LoadGameData {
 		return sections;
 	}
 	
-	private static String loadSection(Section section) {
+	private static ArrayList<Trainer> loadSection(Section section, GameData gameData) {
 		String source = "";
 		try {
 			source = loadPageHTML(section.getLink());
+			//Section page loaded now to actually operate on the page itself
+			return LoadTrainers.getTrainers(source, gameData.getGame());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return source;
+		return null;
 	}
 			
 	/**

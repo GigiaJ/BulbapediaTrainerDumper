@@ -25,10 +25,12 @@ public class Pokemon {
 			this.gender = Gender.NONE.gender;
 			return;
 		}
-		if (gender.equals("â™,")) {
+		if (gender.equals("â™‚")) {
+			this.gender = Gender.MALE.gender;
+		}
+		if (gender.equals("â™€ ")) {
 			this.gender = Gender.FEMALE.gender;
 		}
-		if (gender.equals("â™€ "))
 		this.gender = gender;
 	}
 	

@@ -9,7 +9,7 @@ public class Main {
 
 	
 	public static void main(String[] args) {
-		ArrayList<GameData> gamesData = LoadGameData.loadData();
+		ArrayList<GameData> gamesData = LoadGameData.loadData(null, null);
 		String output = "";
 		for (GameData gameData : gamesData) {
 			for (Trainer trainer : gameData.getTrainers()) {

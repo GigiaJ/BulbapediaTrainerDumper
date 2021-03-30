@@ -5,12 +5,12 @@ import java.util.ArrayList;
 public class GameData {
 	private Section[] sections;
 	private Game game;
-	private Trainer[] trainers;
+	private ArrayList<Trainer> trainers;
 	
 	public GameData() {	
 	}
 	
-	public GameData(Section[] sections, Game game, Trainer[] trainers) {
+	public GameData(Section[] sections, Game game, ArrayList<Trainer> trainers) {
 		this.sections = sections;
 		this.game = game;
 		this.trainers = trainers;
@@ -20,8 +20,8 @@ public class GameData {
 		this.sections = sections.toArray(new Section[0]);
 		this.game = game;
 		if (trainers != null) 
-			this.trainers = trainers.toArray(new Trainer[0]);
-		this.trainers = null;
+			this.trainers = trainers;
+		this.trainers = new ArrayList<Trainer>();
 	}
 
 	public Section[] getSections() {
@@ -40,12 +40,16 @@ public class GameData {
 		this.game = game;
 	}
 
-	public Trainer[] getTrainers() {
+	public ArrayList<Trainer> getTrainers() {
 		return trainers;
 	}
 
-	public void setTrainers(Trainer[] trainers) {
+	public void setTrainers(ArrayList<Trainer> trainers) {
 		this.trainers = trainers;
+	}
+
+	public void addTrainers(ArrayList<Trainer> loadSection) {
+		this.trainers.addAll(loadSection);
 	}
 	
 	

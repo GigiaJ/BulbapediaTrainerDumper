@@ -47,14 +47,48 @@ public class MajorTrainer {
 								else if (pokemon.getGender() == null) {
 									if (node.text().equals("Lv.")) {
 										pokemon.setGender(null);
-										pokemon.setLevel(Integer.valueOf(node.parent().ownText()));
+										Element parentNode= node.parent();
+										String parentNodeText = parentNode.ownText().replaceAll("\\s", "").replaceAll("\\D", "");
+										Elements BW2Standard = parentNode.select("span.explain");
+										//BW2 has 3 level options depending on the mode of the game
+										if (!BW2Standard.isEmpty()) {
+											Elements BW2Gym = parentNode.select("[title*=Normal Mode]");
+											if (!BW2Gym.isEmpty()) {
+												String BW2GymLevel = BW2Gym.first().text();
+												pokemon.setLevel(Integer.valueOf(BW2GymLevel));
+											}
+											else {
+												String BW2Level = BW2Standard.first().text();
+												pokemon.setLevel(Integer.valueOf(BW2Level));
+											}
+										}
+										else {
+											pokemon.setLevel(Integer.valueOf(parentNodeText));
+										}
 									}
 									else {
 										pokemon.setGender(node.text());
 									}
 								}
 								else if (pokemon.getLevel() == 0) {
-									pokemon.setLevel(Integer.valueOf(node.parent().ownText()));
+									Element parentNode= node.parent();
+									String parentNodeText = parentNode.ownText().replaceAll("\\s", "").replaceAll("\\D", "");
+									Elements BW2Standard = parentNode.select("span.explain");
+									//BW2 has 3 level options depending on the mode of the game
+									if (!BW2Standard.isEmpty()) {
+										Elements BW2Gym = parentNode.select("[title*=Normal Mode]");
+										if (!BW2Gym.isEmpty()) {
+											String BW2GymLevel = BW2Gym.first().text();
+											pokemon.setLevel(Integer.valueOf(BW2GymLevel));
+										}
+										else {
+											String BW2Level = BW2Standard.first().text();
+											pokemon.setLevel(Integer.valueOf(BW2Level));
+										}
+									}
+									else {
+										pokemon.setLevel(Integer.valueOf(parentNodeText));
+									}
 								}
 						}
 					}
@@ -62,6 +96,9 @@ public class MajorTrainer {
 						nodes = pokeSearch.select("td [title*=(Ability)]");
 						if (!nodes.isEmpty()) {
 							pokemon.setAbility(nodes.first().text());
+						}
+						else {
+							pokemon.setAbility("");
 						}
 						nodes = pokeSearch.select("tr [style=\"text-align: center;\"]");
 						if (!nodes.isEmpty()) {
