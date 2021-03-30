@@ -9,14 +9,15 @@ public class Main {
 
 	
 	public static void main(String[] args) {
-		//ArrayList<Trainer> trainers = LoadTrainers.getAllTrainers();
-		ArrayList<Trainer> trainers = LoadTrainers.getGameTrainers(Game.RB, 15);
-		String allTrainers = "";
- 		for (Trainer trainer : trainers) {
- 			allTrainers += "\n" + trainer.name;
- 			allTrainers += "\n" + trainer.getPokemon();
+		ArrayList<GameData> gamesData = LoadGameData.loadData();
+		String output = "";
+		for (GameData gameData : gamesData) {
+			for (Trainer trainer : gameData.getTrainers()) {
+				output += trainer.getName() + "\n";
+				output += trainer.getPokemon() + "\n";
+			}
 		}
-		saveTo(allTrainers);
+		saveTo(output);
 	}
 		
 	/**

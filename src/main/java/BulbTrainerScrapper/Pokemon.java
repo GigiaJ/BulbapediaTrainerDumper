@@ -1,16 +1,16 @@
 package BulbTrainerScrapper;
 
 public class Pokemon {
-	static int MAX_NUMBER_OF_MOVES = 4;
-	static int MAX_LEVEL = 100;
-	
-	
-	int level;
-	String gender;
-	String ability;
-	String heldItem;
-	String name;
-	String[] moves;
+	public static final String POKEMON_MOVE_INVALID = "None";
+	public static int MAX_NUMBER_OF_MOVES = 4;
+	public static int MAX_LEVEL = 100;
+		
+	int level = 0;
+	String gender = null;
+	String ability = null;
+	String heldItem = null;
+	String name = null;
+	String[] moves = null;
 	
 	Pokemon() {
 		moves = new String[4];
@@ -21,6 +21,14 @@ public class Pokemon {
 	}
 	
 	public void setGender(String gender) {
+		if (gender == null) {
+			this.gender = Gender.NONE.gender;
+			return;
+		}
+		if (gender.equals("â™,")) {
+			this.gender = Gender.FEMALE.gender;
+		}
+		if (gender.equals("â™€ "))
 		this.gender = gender;
 	}
 	
@@ -47,8 +55,24 @@ public class Pokemon {
 		}
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	public String getAbility() {
 		return ability;
+	}
+	
+	public String getHeldItem() {
+		return heldItem;
+	}
+	
+	public String getGender() {
+		return gender;
+	}
+	
+	public int getLevel() {
+		return level;
 	}
 	
 	public String toString() {
@@ -69,6 +93,17 @@ public class Pokemon {
 		movesString+="]";
 		return "{ " + "name:" + name + " , " + "level:" + level + " , " + " ability:" + ability + " , " + " heldItem:" + heldItem + " , " + 
 	"gender:" + gender + " , " + "moves:" + movesString + " } ";
+	}
+	
+	
+	enum Gender {
+		MALE("Male"), FEMALE("Female"), NONE("None");
+		
+		String gender;
+		
+		Gender(String gender) {
+			this.gender = gender;
+		}
 	}
 	
 }
