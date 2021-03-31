@@ -1,16 +1,18 @@
 package BulbTrainerScrapper;
 
 public class Trainer {
+	final static String NO_NAME = "No name";
 	final int MAX_POKEMON = 6;
 	private Pokemon[] pokemon;
 	private String name;
-	private String locationOrRole;
+	private String location;
+	private String role;
 	private Game game;
 
 	Trainer() {
 		pokemon = new Pokemon[MAX_POKEMON];
 		name = null;
-		locationOrRole = null;
+		location = null;
 		game = null;
 	}
 	
@@ -18,12 +20,16 @@ public class Trainer {
 		this.name = name;
 	}
 	
-	public void setLocationOrRole(String locationOrRole) {
-		this.locationOrRole = locationOrRole;
+	public void setLocation(String location) {
+		this.location = location;
 	}
 	
 	public void setGame(Game game) {
 		this.game = game;
+	}
+	
+	public void setRole(String role) {
+		this.role = role;
 	}
 	
 	public void addPokemon(Pokemon monToAdd) {
@@ -59,12 +65,16 @@ public class Trainer {
 	}
 
 
-	public String getLocationOrRole() {
-		return locationOrRole;
+	public String getLocation() {
+		return location;
 	}
 	
 	public Game getGame() {
 		return game;
+	}
+	
+	public String getRole() {
+		return role;
 	}
 
 

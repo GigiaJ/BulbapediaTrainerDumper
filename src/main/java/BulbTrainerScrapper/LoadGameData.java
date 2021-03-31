@@ -105,11 +105,18 @@ public class LoadGameData {
 		try {
 			source = loadPageHTML(section.getLink());
 			//Section page loaded now to actually operate on the page itself
-			return LoadTrainers.getTrainers(source, gameData.getGame());
+			return getTrainers(source, gameData.getGame());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static ArrayList<Trainer> getTrainers(String source, Game game) {
+		ArrayList<Trainer> trainers = new ArrayList<Trainer>();
+		trainers.addAll(MajorTrainer.loadTrainers(source, game));
+		trainers.addAll(MinorTrainer.loadTrainers(source, game));
+		return trainers;
 	}
 			
 	/**

@@ -23,16 +23,15 @@ public class MajorTrainer {
 							trainer.setName(nodes.first().text());
 						}
 					}
-					if (trainer.getLocationOrRole() == null) {
+					if (trainer.getLocation() == null) {
 						Elements nodes = node.select("b  > a > span");
-						if (trainer.getLocationOrRole() == null && trainer.getName() != null) {
+						if (trainer.getLocation() == null && trainer.getName() != null) {
 							if (!nodes.isEmpty()) {
-								trainer.setLocationOrRole(nodes.first().text());
+								trainer.setLocation(nodes.first().text());
 							}
 						}
 						trainer.setGame(game);
 					}
-
 				}
 				
 				for (Element pokeSearch : table.select("tbody > tr > td > table > tbody > tr > td > table > tbody")) {
