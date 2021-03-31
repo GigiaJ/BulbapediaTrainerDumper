@@ -77,7 +77,23 @@ public class MinorTrainer extends Trainer {
 									pokemon.setLevel(Integer.valueOf(level));
 								}
 								else {
-									pokemon.setLevel(Integer.valueOf(level));
+									//BW2 also breaks for minor trainers apparently
+									//Challenge mode and what not
+									if (level.equals("")) {
+										level = parentsChildren.get(2).child(0).children().get(1).ownText();
+										pokemon.setLevel(Integer.valueOf(level));
+									}
+									else {
+										if (level.equals("Varies")) {
+											/*ONE INSTANCE IN BW2 HAS THIS*/
+											pokemon.setLevel(63);
+										}
+										else {
+											/*In Emerald and Ruby & Sapphire some trainers have rematch properties */
+											level = parentsChildren.get(2).child(0).text().replace("Lv.", "").split("/")[0];
+											pokemon.setLevel(Integer.valueOf(level));
+										}
+									}
 								}
 							}
 						}
