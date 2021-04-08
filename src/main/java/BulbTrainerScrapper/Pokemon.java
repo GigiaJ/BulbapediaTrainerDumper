@@ -77,6 +77,27 @@ public class Pokemon {
 		return level;
 	}
 	
+	public String toJondString() {
+		final String COMMA_PLACE_HOLDER = "*()&*";
+		String movesString = "";
+		for (int i = 0; i < MAX_NUMBER_OF_MOVES; i++) {
+			if (moves[i] != null) {
+				if (i != MAX_NUMBER_OF_MOVES - 1) {
+					if (i+1 < MAX_NUMBER_OF_MOVES && moves[i+1] != null)
+						movesString+=moves[i]+COMMA_PLACE_HOLDER;
+					else 
+						movesString+=moves[i];
+				}
+				else {
+					movesString+=moves[i];
+				}
+			}
+		}
+		
+		return name + ", " + level + ", " + ability + ", " + heldItem + ", " + 
+	gender + ", " + movesString;
+	}
+	
 	public String toString() {
 		String movesString = "[";
 		for (int i = 0; i < MAX_NUMBER_OF_MOVES; i++) {
@@ -93,6 +114,7 @@ public class Pokemon {
 			}
 		}
 		movesString+="]";
+		
 		return "{ " + "name:" + name + " , " + "level:" + level + " , " + " ability:" + ability + " , " + " heldItem:" + heldItem + " , " + 
 	"gender:" + gender + " , " + "moves:" + movesString + " } ";
 	}

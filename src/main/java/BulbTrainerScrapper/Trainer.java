@@ -6,7 +6,7 @@ public class Trainer {
 	private Pokemon[] pokemon;
 	private String name;
 	private String location;
-	private String role;
+	private String role; //The trainer class, but class and such is a keyword
 	private Game game;
 
 	Trainer() {
@@ -45,6 +45,15 @@ public class Trainer {
 	
 	public void setPokemon(Pokemon[] pokemon) {
 		this.pokemon = pokemon;
+	}
+	
+	public String getJondPokemon() {
+		String s = "";
+		for (Pokemon mon : pokemon) {
+			if (mon != null)
+				s += mon.toJondString() + "\n";
+		}
+		return s;
 	}
 	
 	public String getPokemon() {
